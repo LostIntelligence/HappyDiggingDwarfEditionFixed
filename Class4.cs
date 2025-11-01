@@ -49,9 +49,14 @@ namespace HappyDiggingDwarfEditionFixed
                         num2 = Config.Cfg.SuperHardDiggingStat;
                         break;
                     case 3:
-                        __result += string.Format("\n  'Improved digging' skills: {0:F2} %", (object)(Config.Cfg.ImprovedDiggingSkill * 100f));
-                        num1 = Config.Cfg.ImprovedDiggingSkill;
-                        num2 = Config.Cfg.ImprovedDiggingStat;
+                        __result += string.Format("\n  'Improved digging' skills: {0:F2} %", (object)(Config.Cfg.SuperDuperhardDiggingSkill * 100f));
+                        num1 = Config.Cfg.SuperDuperhardDiggingSkill;
+                        num2 = Config.Cfg.SuperDuperhardDiggingStat;
+                        break;
+                    case 4:
+                        __result += string.Format("\n  'Improved digging' skills: {0:F2} %", (object)(Config.Cfg.HazmatDiggingSkill * 100f));
+                        num1 = Config.Cfg.HazmatDiggingSkill;
+                        num2 = Config.Cfg.HazmatDiggingStat;
                         break;
                 }
                 if (HasDiggingAp)

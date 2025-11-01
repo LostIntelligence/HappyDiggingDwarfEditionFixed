@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Klei.AI;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -112,9 +113,48 @@ namespace HappyDiggingDwarfEditionFixed
         public static int ComputeSkill(MinionResume resume, out bool hasDiggingAptitude)
         {
             int skill = 0;
-            if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining1).Id)) skill++;
-            if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining2).Id)) skill++;
-            if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining3).Id)) skill++;
+            bool enable_dlc3 = Game.IsDlcActiveForCurrentSave("DLC3_ID");
+            if (!enable_dlc3 || resume.GetIdentity.model == GameTags.Minions.Models.Standard)
+            {
+                if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining1).Id)) skill++;
+                if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining2).Id)) skill++;
+                if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining3).Id)) skill++;
+                if (resume.HasMasteredSkill(((Resource)Db.Get().Skills.Mining4).Id)) skill++;
+            }
+            else if (enable_dlc3 && resume.GetIdentity.model == GameTags.Minions.Models.Bionic)
+            {
+                Ownables assignables = resume.GetIdentity.GetSoleOwner();
+                AssignableSlot bionicUpgradeSlot = Db.Get().AssignableSlots.BionicUpgrade;
+                HashSet<Tag> BionicUpgrade = new HashSet<Tag>();
+                bool flag1 = false; // Ensure that only calculated once
+                bool flag2 = false; // Ensure that only calculated once
+                foreach (AssignableSlotInstance slot in assignables.GetSlots(bionicUpgradeSlot))
+                {
+                    bool showInUI = slot.slot.showInUI;
+                    if (showInUI)
+                    {
+
+                        bool flag = slot.IsAssigned();
+                        if (flag)
+                        {
+                            Tag assignedName = slot.assignable.GetComponent<KSelectable>().PrefabID();
+                            if (assignedName != null && assignedName == BionicUpgradeComponentConfig.Booster_Dig1)
+                            {
+                                flag1 = true;
+                            }
+                            if (assignedName != null && assignedName == BionicUpgradeComponentConfig.Booster_Dig2)
+                            {
+                                flag2 = true;
+                            }
+                        }
+                    }
+                }
+
+                if (flag1) skill++;
+                if (flag2) skill = skill + 3;
+
+            }
+
             hasDiggingAptitude = Helper.MinionHasDigAptitude(resume);
             return skill;
         }
@@ -131,7 +171,10 @@ namespace HappyDiggingDwarfEditionFixed
                     ratio = Config.Cfg.SuperHardDiggingSkill + stat / Config.Cfg.SuperHardDiggingStat;
                     break;
                 case 3:
-                    ratio = Config.Cfg.ImprovedDiggingSkill + stat / Config.Cfg.ImprovedDiggingStat;
+                    ratio = Config.Cfg.SuperDuperhardDiggingSkill + stat / Config.Cfg.SuperDuperhardDiggingStat;
+                    break;
+                case 4:
+                    ratio = Config.Cfg.HazmatDiggingSkill + stat / Config.Cfg.HazmatDiggingStat;
                     break;
                 default:
                     ratio = Config.Cfg.DumbDiggerSkill + stat / Config.Cfg.DumbDiggerStat;

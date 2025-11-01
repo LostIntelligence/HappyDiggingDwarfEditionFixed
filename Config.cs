@@ -12,7 +12,7 @@ using UnityEngine;
 namespace HappyDiggingDwarfEditionFixed
 {
   public class Config
-  {
+    {
     [NonSerialized]
     private static Config cfg;
 
@@ -30,9 +30,13 @@ namespace HappyDiggingDwarfEditionFixed
 
     public float SuperHardDiggingStat { get; set; } = 90f;
 
-    public float ImprovedDiggingSkill { get; set; } = 0.65f;
+    public float SuperDuperhardDiggingSkill { get; set; } = 0.65f;
 
-    public float ImprovedDiggingStat { get; set; } = 70f;
+    public float SuperDuperhardDiggingStat { get; set; } = 70f;
+
+    public float HazmatDiggingSkill { get; set; } = 0.7f;
+
+    public float HazmatDiggingStat { get; set; } = 60f;
 
     public bool CanEfficiencyGoesOver100 { get; set; } = false;
 
@@ -118,8 +122,8 @@ namespace HappyDiggingDwarfEditionFixed
               Config.cfg.HardDiggingStat = 100f;
             if ((double) Config.cfg.SuperHardDiggingSkill == 0.0)
               Config.cfg.SuperHardDiggingStat = 100f;
-            if ((double) Config.cfg.ImprovedDiggingStat == 0.0)
-              Config.cfg.ImprovedDiggingStat = 100f;
+            if ((double) Config.cfg.SuperDuperhardDiggingStat == 0.0)
+              Config.cfg.SuperDuperhardDiggingStat = 100f;
             if ((double) Config.cfg.DumbDiggerStat == 0.0)
               Config.cfg.DumbDiggerStat = 100f;
           }
@@ -142,6 +146,14 @@ namespace HappyDiggingDwarfEditionFixed
           {
             Config.cfg.Ver = 5;
             Debug.Log((object) "HappyDigging updated to version 5.");
+            Config.SaveConfig(Config.cfg);
+          }
+          if (Config.cfg.Ver != 6)
+          {
+            Config.cfg.Ver = 6;
+            Config.cfg.HazmatDiggingSkill = 0.7f;
+            Config.cfg.HazmatDiggingStat = 60f;
+            Debug.Log((object) "HappyDigging updated to version 6.");
             Config.SaveConfig(Config.cfg);
           }
         }

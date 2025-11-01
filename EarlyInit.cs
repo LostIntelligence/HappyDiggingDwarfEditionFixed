@@ -13,7 +13,7 @@ namespace HappyDiggingDwarfEditionFixed
   {
     private static bool Init;
 
-    public virtual void OnLoad(Harmony harmony)
+    public override void OnLoad(Harmony harmony)
     {
       base.OnLoad(harmony);
       EarlyInit.PostInit();
