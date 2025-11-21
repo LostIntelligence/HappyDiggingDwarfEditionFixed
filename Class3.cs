@@ -58,6 +58,7 @@ namespace HappyDiggingDwarfEditionFixed
             if (ShowRatio)
             {
                 var effectColor = Config.Cfg.TextEffectColor;
+
                 if (Config.Cfg.CanUseGradient)
                 {
                     var ratioPercent = Mathf.Clamp(ratio * 100f, 50f, 150f);
@@ -75,16 +76,48 @@ namespace HappyDiggingDwarfEditionFixed
                     }
                 }
 
-                var popFx = PopFXManager.Instance.SpawnFX(PopFXManager.Instance.sprite_Resource, $"{ratio * 100f:F2} %", component.transform, Config.Cfg.TextEffectDuration, false);
+                var popFx = PopFXManager.Instance.SpawnFX(
+                    PopFXManager.Instance.sprite_Resource,
+                    $"{ratio * 100f:F2} %",
+                    component.transform,
+                    Config.Cfg.TextEffectDuration,
+                    false
+                );
                 if (popFx != null)
                 {
-                    popFx.TextDisplay.color = effectColor;
-                    ((TMP_Text)popFx.TextDisplay).fontSize = 29f;
-                    KMonoBehaviourExtensions.SetAlpha(popFx.IconDisplay, 0.0f);
-                    Traverse.Create(popFx).Field("Speed").SetValue(Config.Cfg.TextEffectSpeed);
+                    // Stop all leftover coroutines
+                    popFx.StopAllCoroutines();
+
+                    // Ensure full text is visible immediately
+                    var tmp = (TMP_Text)popFx.TextDisplay;
+                    tmp.maxVisibleCharacters = int.MaxValue;
+                    tmp.ForceMeshUpdate(true);
+
+                    // Set color & font size
+                    tmp.color = effectColor;
+                    tmp.alpha = 1f;
+                    tmp.fontSize = 29f;
+
+                    // Hide icons
+                    popFx.IconDisplay.gameObject.SetActive(false);
+                    popFx.MainIconDisplay.gameObject.SetActive(false);
+
+                    // Reset scale and mask
+                    popFx.transform.localScale = Vector3.one;
+                    popFx.canvasGroup.alpha = 1f;
+                    popFx.mask.fillAmount = 1f;
+
+                    // Set lifetime for speed
+                    float baseLifetime = Traverse.Create(popFx).Field("lifetime").GetValue<float>();
+                    Traverse.Create(popFx).Field("lifetime").SetValue(baseLifetime / Config.Cfg.TextEffectSpeed);
+
+                    // Apply offset
                     Traverse.Create(popFx).Field("offset").SetValue(new Vector3(0.0f, 2.5f));
                 }
+
+
             }
+
 
             var modifiedMass = mass * ratio * Config.Cfg.GeneralMassMultiplier;
             Helper.MassTotal += modifiedMass;
