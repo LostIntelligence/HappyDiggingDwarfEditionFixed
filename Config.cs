@@ -1,163 +1,59 @@
-﻿using System;
-using System.IO;
-using System.Xml.Serialization;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HappyDiggingDwarfEditionFixed
 {
-  public class Config
+    public class Config
     {
-    [NonSerialized]
-    private static Config cfg;
+        // Holds the current settings instance
+        private static HappyDiggingSettings settings;
 
-    public int Ver { get; set; } = 1;
+        public static void Init(HappyDiggingSettings s)
+        {
+            settings = s;
+        }
 
-    public float DumbDiggerSkill { get; set; } = 0.5f;
+        // Now all properties read from the settings instance
+        public static Config Cfg { get; } = new Config();
 
-    public float DumbDiggerStat { get; set; } = 120f;
+        public float DumbDiggerSkill => settings.DumbDiggerSkill;
+        public float DumbDiggerStat => settings.DumbDiggerStat;
 
-    public float HardDiggingSkill { get; set; } = 0.55f;
+        public float HardDiggingSkill => settings.HardDiggingSkill;
+        public float HardDiggingStat => settings.HardDiggingStat;
 
-    public float HardDiggingStat { get; set; } = 100f;
+        public float SuperHardDiggingSkill => settings.SuperHardDiggingSkill;
+        public float SuperHardDiggingStat => settings.SuperHardDiggingStat;
 
-    public float SuperHardDiggingSkill { get; set; } = 0.6f;
+        public float SuperDuperhardDiggingSkill => settings.SuperDuperhardDiggingSkill;
+        public float SuperDuperhardDiggingStat => settings.SuperDuperhardDiggingStat;
 
-    public float SuperHardDiggingStat { get; set; } = 90f;
+        public float HazmatDiggingSkill => settings.HazmatDiggingSkill;
+        public float HazmatDiggingStat => settings.HazmatDiggingStat;
 
-    public float SuperDuperhardDiggingSkill { get; set; } = 0.65f;
+        public bool CanEfficiencyGoesOver100 => settings.CanEfficiencyGoesOver100;
+        public float GeneralMassMultiplier => settings.GeneralMassMultiplier;
+        public float NonDuplicantMiningEfficiency => settings.NonDuplicantMiningEfficiency;
+        public bool FullInfo => settings.FullInfo;
+        public float BonusDiggingAptitude => settings.BonusDiggingAptitude;
+        public bool FullDecsriptionInToolTip => settings.FullDescriptionInToolTip;
+        public bool ShowRatio => settings.ShowRatio;
 
-    public float SuperDuperhardDiggingStat { get; set; } = 70f;
+        public float TextEffectDuration => settings.TextEffectDuration;
+        public float TextEffectSpeed => settings.TextEffectSpeed;
+        public Color32 TextEffectColor => settings.TextEffectColor;
+        public bool CanUseGradient => settings.CanUseGradient;
+        public Color32 Color50Eff => settings.Color50Eff;
+        public Color32 Color75Eff => settings.Color75Eff;
+        public Color32 Color100Eff => settings.Color100Eff;
+        public Color32 Color150Eff => settings.Color150Eff;
 
-    public float HazmatDiggingSkill { get; set; } = 0.7f;
+        public bool Remove10MiningFromAtmosuit => settings.Remove10MiningFromAtmosuit;
+        public bool ChangeMiningToStrengthInAtmoSuit => settings.ChangeMiningToStrengthInAtmosuit;
+        public bool Remove10MiningFromJetsuit => settings.Remove10MiningFromJetsuit;
+        public bool ChangeMiningToStrengthInJetSuit => settings.ChangeMiningToStrengthInJetsuit;
 
-    public float HazmatDiggingStat { get; set; } = 60f;
-
-    public bool CanEfficiencyGoesOver100 { get; set; } = false;
-
-    public float GeneralMassMultiplier { get; set; } = 1f;
-
-    public float NonDuplicantMiningEfficiency { get; set; } = 0.5f;
-
-    public bool FullInfo { get; set; } = true;
-
-    public float BonusDiggingAptitude { get; set; } = 0.07f;
-
-    public bool FullDecsriptionInToolTip { get; set; } = true;
-
-    public bool ShowRatio { get; set; } = true;
-
-    public float TextEffectDuration { get; set; } = 5f;
-
-    public float TextEffectSpeed { get; set; } = 0.5f;
-
-    public Color32 TextEffectColor { get; set; } = (Color32) Color.green;
-
-    public bool CanUseGradient { get; set; } = true;
-
-    public Color32 Color50Eff { get; set; } = (Color32)Color.red;
-
-    public Color32 Color75Eff { get; set; } = (Color32)Color.yellow;
-
-    public Color32 Color100Eff { get; set; } = (Color32)Color.green;
-
-        public Color32 Color150Eff { get; set; } = (Color32)Color.blue;
-
-        public bool Remove10MiningFromAtmosuit { get; set; } = false;
-
-    public bool ChangeMiningToStrengthInAtmoSuit { get; set; } = false;
-
-    public bool Remove10MiningFromJetsuit { get; set; } = false;
-
-    public bool ChangeMiningToStrengthInJetSuit { get; set; } = false;
-
-    public static string GetConfigFileName()
-    {
-      return Path.Combine(Path.GetDirectoryName(typeof (Class1).Assembly.Location), "HappyDiggingConfig.TxT");
+        // Optional: path for migration
+        public static string GetConfigFileName() =>
+            System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Class1).Assembly.Location), "HappyDiggingConfig.TxT");
     }
-
-    public static void SaveConfig(Config C)
-    {
-      if (C == null)
-        return;
-      try
-      {
-        using (StreamWriter streamWriter = new StreamWriter(Config.GetConfigFileName()))
-        {
-          new XmlSerializer(typeof (Config)).Serialize((TextWriter) streamWriter, (object) Config.cfg);
-          streamWriter.Flush();
-        }
-      }
-      catch (Exception ex)
-      {
-        Debug.Log((object) ("Something goes wrong, can not save config (" + Config.GetConfigFileName() + "), Exception: " + ex.ToString()));
-      }
-    }
-
-    public static Config Cfg
-    {
-      get
-      {
-        if (Config.cfg != null)
-          return Config.cfg;
-        if (!File.Exists(Config.GetConfigFileName()))
-        {
-          Debug.Log((object) ("Config file not found (" + Config.GetConfigFileName() + "). Creating new one with default values."));
-          Config.cfg = new Config();
-          Config.cfg.Ver = 4;
-          Config.SaveConfig(Config.cfg);
-          return Config.cfg;
-        }
-        try
-        {
-          using (FileStream fileStream = File.OpenRead(Config.GetConfigFileName()))
-          {
-            Config.cfg = new XmlSerializer(typeof (Config)).Deserialize((Stream) fileStream) as Config;
-            if ((double) Config.cfg.HardDiggingStat == 0.0)
-              Config.cfg.HardDiggingStat = 100f;
-            if ((double) Config.cfg.SuperHardDiggingSkill == 0.0)
-              Config.cfg.SuperHardDiggingStat = 100f;
-            if ((double) Config.cfg.SuperDuperhardDiggingStat == 0.0)
-              Config.cfg.SuperDuperhardDiggingStat = 100f;
-            if ((double) Config.cfg.DumbDiggerStat == 0.0)
-              Config.cfg.DumbDiggerStat = 100f;
-          }
-          if (Config.cfg.Ver == 1)
-          {
-            Config.cfg.Ver = 2;
-            Config.cfg.BonusDiggingAptitude = 0.07f;
-            Debug.Log((object) "Configuration updated to version 2.");
-            Config.SaveConfig(Config.cfg);
-          }
-          if (Config.cfg.Ver == 2)
-          {
-            Config.cfg.Ver = 3;
-            Config.cfg.FullDecsriptionInToolTip = true;
-            Config.cfg.ShowRatio = true;
-            Debug.Log((object) "Configuration updated to version 3.");
-            Config.SaveConfig(Config.cfg);
-          }
-          if (Config.cfg.Ver != 5)
-          {
-            Config.cfg.Ver = 5;
-            Debug.Log((object) "HappyDigging updated to version 5.");
-            Config.SaveConfig(Config.cfg);
-          }
-          if (Config.cfg.Ver != 6)
-          {
-            Config.cfg.Ver = 6;
-            Config.cfg.HazmatDiggingSkill = 0.7f;
-            Config.cfg.HazmatDiggingStat = 60f;
-            Debug.Log((object) "HappyDigging updated to version 6.");
-            Config.SaveConfig(Config.cfg);
-          }
-        }
-        catch (Exception ex)
-        {
-          Debug.Log((object) ("Something goes wrong, can not load config (" + Config.GetConfigFileName() + "), Exception: " + ex.ToString()));
-          Config.cfg = new Config();
-        }
-        return Config.cfg;
-      }
-    }
-  }
 }

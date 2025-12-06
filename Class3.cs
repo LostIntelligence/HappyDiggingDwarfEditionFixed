@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Klei.AI;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -75,7 +76,7 @@ namespace HappyDiggingDwarfEditionFixed
                         effectColor = Color32.Lerp(Config.Cfg.Color75Eff, Config.Cfg.Color100Eff, (ratioPercent - 75f) / 25f);
                     }
                 }
-
+                // Spawn PopFX normally
                 var popFx = PopFXManager.Instance.SpawnFX(
                     PopFXManager.Instance.sprite_Resource,
                     $"{ratio * 100f:F2} %",
@@ -85,37 +86,9 @@ namespace HappyDiggingDwarfEditionFixed
                 );
                 if (popFx != null)
                 {
-                    // Stop all leftover coroutines
-                    popFx.StopAllCoroutines();
-
-                    // Ensure full text is visible immediately
-                    var tmp = (TMP_Text)popFx.TextDisplay;
-                    tmp.maxVisibleCharacters = int.MaxValue;
-                    tmp.ForceMeshUpdate(true);
-
-                    // Set color & font size
-                    tmp.color = effectColor;
-                    tmp.alpha = 1f;
-                    tmp.fontSize = 29f;
-
-                    // Hide icons
-                    popFx.IconDisplay.gameObject.SetActive(false);
-                    popFx.MainIconDisplay.gameObject.SetActive(false);
-
-                    // Reset scale and mask
-                    popFx.transform.localScale = Vector3.one;
-                    popFx.canvasGroup.alpha = 1f;
-                    popFx.mask.fillAmount = 1f;
-
-                    // Set lifetime for speed
-                    float baseLifetime = Traverse.Create(popFx).Field("lifetime").GetValue<float>();
-                    Traverse.Create(popFx).Field("lifetime").SetValue(baseLifetime / Config.Cfg.TextEffectSpeed);
-
-                    // Apply offset
-                    Traverse.Create(popFx).Field("offset").SetValue(new Vector3(0.0f, 2.5f));
+                    // Run modifications *after PopFX finishes its own initialization*
+                    PopFxModifier.Apply(popFx, effectColor);
                 }
-
-
             }
 
 
@@ -226,5 +199,9 @@ namespace HappyDiggingDwarfEditionFixed
 
             return Mathf.Clamp(ratio, 0.1f, float.MaxValue);
         }
+      
+
+
     }
+
 }
