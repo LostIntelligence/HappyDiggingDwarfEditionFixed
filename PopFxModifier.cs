@@ -38,13 +38,11 @@ namespace HappyDiggingDwarfEditionFixed
                 tmp.maxVisibleWords = int.MaxValue;
                 tmp.maxVisibleLines = int.MaxValue;
 
-                tmp.enableWordWrapping = false;
+                tmp.textWrappingMode = TextWrappingModes.NoWrap;
 
                 tmp.color = color;
                 tmp.alpha = 1f;
                 tmp.fontSize = 24f;
-
-                tmp.ForceMeshUpdate();
             }
 
             // =============================
