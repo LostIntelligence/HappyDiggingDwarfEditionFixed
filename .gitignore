@@ -6,3 +6,6 @@
 /bin/**
 /.vs/**
 !/bin/Debug/**
+# Compiled resources and intermediate language files
+*.il
+*.res
